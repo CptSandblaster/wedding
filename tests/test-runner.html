@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<title>OSA-sajt – tester</title>
+<style>
+  body { font-family: -apple-system, Arial, sans-serif; max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
+  h1 { font-size: 1.4rem; }
+  #summary { font-weight: bold; margin: 1rem 0; padding: 0.75rem 1rem; border-radius: 6px; }
+  #summary.pass { background: #dcf5e3; color: #14532d; }
+  #summary.fail { background: #fbe1e1; color: #7f1d1d; }
+  ul#results { list-style: none; padding: 0; }
+  li { padding: 0.5rem 0.75rem; border-bottom: 1px solid #eee; font-size: 0.92rem; }
+  li.pass::before { content: "✓ "; color: #16a34a; font-weight: bold; }
+  li.fail::before { content: "✗ "; color: #dc2626; font-weight: bold; }
+  li.fail { background: #fff5f5; }
+  li .err { display: block; color: #991b1b; margin-top: 0.25rem; font-family: monospace; white-space: pre-wrap; }
+  iframe { width: 100%; height: 500px; border: 1px solid #ccc; margin-top: 2rem; }
+</style>
+</head>
+<body>
+<h1>Tester – Malin &amp; Sebastians bröllopssajt</h1>
+<p>Kör en statisk HTML/JS-sida i en iframe och verifierar formulärlogik, valideringsregler och strukturell konsekvens. Ingen testrunner/npm behövs – öppna filen i valfri webbläsare (via en lokal webbserver, inte <code>file://</code>, eftersom sidan hämtar <code>Code.gs</code> med <code>fetch</code> i ett av testerna).</p>
+
+<div id="summary">Kör tester…</div>
+<ul id="results"></ul>
+<iframe id="frame" title="Testad sida"></iframe>
+
+<script>
+const resultsEl = document.getElementById("results");
+const summaryEl = document.getElementById("summary");
+const frame = document.getElementById("frame");
+let passCount = 0;
+let failCount = 0;
+
+function report(name, ok, err) {
+  const li = document.createElement("li");
+  li.className = ok ? "pass" : "fail";
+  li.textContent = name;
+  if (!ok && err) {
+    const span = document.createElement("span");
+    span.className = "err";
+    span.textContent = err.message || String(err);
+    li.appendChild(span);
+  }
+  resultsEl.appendChild(li);
+  ok ? passCount++ : failCount++;
+}
+
+function assert(condition, message) {
+  if (!condition) throw new Error(message || "Assertion failed");
+}
+
+async function loadFrame(src) {
+  return new Promise((resolve, reject) => {
+    frame.onload = () => resolve(frame.contentWindow);
+    frame.onerror = reject;
+    frame.src = src;
+  });
+}
+
+async function test(name, fn) {
+  try {
+    await fn();
+    report(name, true);
+  } catch (err) {
+    report(name, false, err);
+  }
+}
+
+function setRadio(doc, name, value) {
+  const el = doc.querySelector(`input[name="${name}"][value="${value}"]`);
+  if (!el) throw new Error(`Hittar inte input[name=${name}][value=${value}]`);
+  el.click(); // radioknappar går bara att slå PÅ via klick, aldrig av - idempotent
+  return el;
+}
+
+// Checkboxar (t.ex. allergier) togglas av .click(), så ett klick på en redan
+// ikryssad ruta från ett tidigare test skulle råka bocka ur den. Sätt därför
+// .checked explicit och trigga ett "change"-event (main.js lyssnar på det).
+function setChecked(win, doc, name, value, checked = true) {
+  const el = doc.querySelector(`input[name="${name}"][value="${value}"]`);
+  if (!el) throw new Error(`Hittar inte input[name=${name}][value=${value}]`);
+  if (el.checked !== checked) {
+    el.checked = checked;
+    el.dispatchEvent(new win.Event("change", { bubbles: true }));
+  }
+  return el;
+}
+
+function fillAttendingGuest(doc, win) {
+  doc.getElementById("namn").value = "Test Testsson";
+  doc.getElementById("email").value = "test@example.com";
+  doc.getElementById("telefon").value = "0701234567";
+  setRadio(doc, "kommer", "Ja");
+  setChecked(win, doc, "allergier", "inga");
+  setRadio(doc, "alkohol", "Alkoholfritt");
+  setRadio(doc, "buss_vigsel", "Nej");
+  setRadio(doc, "buss_natt", "Nej");
+}
+
+async function run() {
+  const win = await loadFrame("../index.html");
+  const doc = win.document;
+
+  await test("Sidan laddar utan att JS kraschar (globala funktioner finns)", () => {
+    ["updateKommerVisibility", "collectFormData", "updateAllergierValidity", "getViewToken"].forEach((fn) => {
+      assert(typeof win[fn] === "function", `window.${fn} saknas eller är inte en funktion`);
+    });
+  });
+
+  await test("Inga dubbletter av id-attribut i dokumentet", () => {
+    const ids = [...doc.querySelectorAll("[id]")].map((el) => el.id);
+    const seen = new Set();
+    const dupes = new Set();
+    ids.forEach((id) => (seen.has(id) ? dupes.add(id) : seen.add(id)));
+    assert(dupes.size === 0, `Dubbletter: ${[...dupes].join(", ")}`);
+  });
+
+  await test("Exakt en H1, och H2/H3/H4 finns utan kvarglömda inline text-align-stilar", () => {
+    assert(doc.querySelectorAll("h1").length === 1, "Ska finnas exakt en <h1>");
+    assert(doc.querySelectorAll("h2").length >= 3, "Förväntade minst 3 <h2> (Praktiska detaljer, Vanliga frågor, OSA)");
+    const headingsWithInlineAlign = [...doc.querySelectorAll("h1,h2,h3,h4")].filter((h) =>
+      (h.getAttribute("style") || "").includes("text-align")
+    );
+    assert(headingsWithInlineAlign.length === 0, "Rubriker med kvarglömd inline text-align-stil hittades");
+  });
+
+  await test("Honeypot-fältet är visuellt dolt men finns i formuläret", () => {
+    const hp = doc.getElementById("website");
+    assert(hp, "Honeypot-fältet saknas");
+    const rect = hp.getBoundingClientRect();
+    assert(rect.left < -1000, "Honeypot-fältet ska vara flyttat utanför synligt område");
+  });
+
+  await test("Kommer=Ja visar resten av formuläret, Kommer=Nej döljer det", () => {
+    setRadio(doc, "kommer", "Ja");
+    assert(doc.getElementById("restOfForm").hidden === false, "restOfForm ska synas vid Ja");
+    setRadio(doc, "kommer", "Nej");
+    assert(doc.getElementById("restOfForm").hidden === true, "restOfForm ska döljas vid Nej");
+  });
+
+  await test("Namn, e-post och telefon är alltid obligatoriska (oavsett Ja/Nej)", () => {
+    setRadio(doc, "kommer", "Ja");
+    assert(doc.getElementById("namn").required, "namn ska vara required vid Ja");
+    setRadio(doc, "kommer", "Nej");
+    assert(doc.getElementById("namn").required, "namn ska vara required vid Nej");
+    assert(doc.getElementById("email").required, "email ska vara required");
+    assert(doc.getElementById("telefon").required, "telefon ska vara required");
+  });
+
+  await test("Alkohol/buss är bara obligatoriska när man svarar Ja", () => {
+    setRadio(doc, "kommer", "Nej");
+    ["alkohol", "buss_vigsel", "buss_natt"].forEach((name) => {
+      doc.querySelectorAll(`input[name="${name}"]`).forEach((el) => {
+        assert(el.required === false, `${name} ska inte vara required vid Nej`);
+      });
+    });
+    setRadio(doc, "kommer", "Ja");
+    ["alkohol", "buss_vigsel", "buss_natt"].forEach((name) => {
+      const anyRequired = [...doc.querySelectorAll(`input[name="${name}"]`)].some((el) => el.required);
+      assert(anyRequired, `${name} ska vara required vid Ja`);
+    });
+  });
+
+  await test("Allergier kräver minst ett val vid Ja, men \"Inga allergier\" räcker", () => {
+    setRadio(doc, "kommer", "Ja");
+    doc.querySelectorAll('input[name="allergier"]').forEach((box) => (box.checked = false));
+    win.updateAllergierValidity();
+    const anchor = doc.querySelector('input[name="allergier"]');
+    assert(anchor.checkValidity() === false, "Allergier ska vara ogiltigt när inget är ikryssat");
+    setChecked(win, doc, "allergier", "inga");
+    assert(anchor.checkValidity() === true, '"Inga allergier" ska räcka för att vara giltigt');
+  });
+
+  await test('"Inga allergier" och andra allergival utesluter varandra', () => {
+    setRadio(doc, "kommer", "Ja");
+    const inga = doc.querySelector('input[name="allergier"][value="inga"]');
+    const gluten = doc.querySelector('input[name="allergier"][value="gluten"]');
+    setChecked(win, doc, "allergier", "inga");
+    assert(inga.checked === true, '"Inga allergier" ska vara ikryssad');
+    setChecked(win, doc, "allergier", "gluten");
+    assert(inga.checked === false, '"Inga allergier" ska bockas ur automatiskt');
+    assert(gluten.checked === true);
+    setChecked(win, doc, "allergier", "inga");
+    assert(gluten.checked === false, "Gluten ska bockas ur när \"Inga allergier\" väljs");
+  });
+
+  await test('Allergier "Annat" kräver text i fritextfältet', () => {
+    setRadio(doc, "kommer", "Ja");
+    const ovrigt = doc.getElementById("allergier_ovrigt") || doc.querySelector('input[name="allergier_ovrigt"]');
+    setChecked(win, doc, "allergier", "annat");
+    assert(ovrigt.required === true, "allergier_ovrigt ska bli required när Annat kryssas i");
+    ovrigt.value = "";
+    assert(ovrigt.checkValidity() === false, "Fältet ska vara ogiltigt när Annat är valt men texten är tom");
+    ovrigt.value = "Jordnötsallergi";
+    assert(ovrigt.checkValidity() === true, "Fältet ska vara giltigt när text är ifylld");
+    setChecked(win, doc, "allergier", "annat", false);
+    assert(ovrigt.required === false, "allergier_ovrigt ska inte längre vara required när Annat bockas ur");
+    ovrigt.value = "";
+  });
+
+  await test("Ofullständigt Ja-formulär går inte att skicka in", () => {
+    doc.getElementById("namn").value = "Test";
+    doc.getElementById("email").value = "test@example.com";
+    doc.getElementById("telefon").value = "0701234567";
+    setRadio(doc, "kommer", "Ja");
+    doc.querySelectorAll('input[name="allergier"]').forEach((box) => (box.checked = false));
+    win.updateAllergierValidity();
+    const status = doc.getElementById("formStatus");
+    status.hidden = true;
+    doc.getElementById("submitBtn").click();
+    assert(status.hidden === true, "formStatus ska förbli dold när formuläret är ogiltigt");
+  });
+
+  await test("Komplett Ja-formulär passerar validering (når fram till backend-kollen)", () => {
+    fillAttendingGuest(doc, win);
+    const status = doc.getElementById("formStatus");
+    status.hidden = true;
+    doc.getElementById("submitBtn").click();
+    assert(status.hidden === false, "formStatus ska visas (backend-URL saknas ännu, men valideringen ska ha passerat)");
+    assert(status.textContent.includes("inte färdigkopplat"), "Förväntat felmeddelande om saknad backend-URL");
+  });
+
+  await test("Nej-formulär kräver bara namn/e-post/telefon", () => {
+    doc.getElementById("namn").value = "Test Nej";
+    doc.getElementById("email").value = "nej@example.com";
+    doc.getElementById("telefon").value = "0701234567";
+    setRadio(doc, "kommer", "Nej");
+    const status = doc.getElementById("formStatus");
+    status.hidden = true;
+    doc.getElementById("submitBtn").click();
+    assert(status.hidden === false, "Nej-formulär med ifyllda basfält ska passera validering");
+  });
+
+  await test("collectFormData samlar exakt de fält backend förväntar sig", () => {
+    fillAttendingGuest(doc, win);
+    doc.getElementById("meddelande").value = "Hej!";
+    const data = win.collectFormData();
+    const expectedKeys = [
+      "kommer", "namn", "email", "telefon",
+      "allergier", "allergier_ovrigt", "alkohol",
+      "buss_vigsel", "buss_natt", "meddelande", "website",
+    ];
+    expectedKeys.forEach((key) => assert(key in data, `Fältet "${key}" saknas i collectFormData()`));
+    assert(data.namn === "Test Testsson");
+    assert(data.kommer === "Ja");
+    assert(data.allergier === "inga");
+    assert(data.website === "", "Honeypot ska vara tom vid normal inskickning");
+  });
+
+  await test("getViewToken() läser ?t=-parametern ur URL:en", async () => {
+    const tokenWin = await loadFrame("../index.html?t=abc123");
+    assert(tokenWin.getViewToken() === "abc123", "getViewToken() ska returnera query-parameterns värde");
+    // Utan backend-URL kan sidan inte hämta data, men fälten ska förbli
+    // aktiva (view-only-läget triggas bara om hämtningen faktiskt lyckas).
+    assert(tokenWin.document.getElementById("namn").disabled === false, "Fälten ska vara aktiva när ingen data kunde hämtas");
+  });
+
+  await test("enterViewOnlyMode() gör fälten oredigerbara och döljer skicka-knappen", async () => {
+    const tokenWin = await loadFrame("../index.html?t=abc123");
+    const tokenDoc = tokenWin.document;
+    tokenWin.enterViewOnlyMode();
+    assert(tokenDoc.getElementById("namn").disabled === true, "namn ska vara disabled i läsvyn");
+    assert(tokenDoc.getElementById("submitBtn").hidden === true, "Skicka-knappen ska döljas i läsvyn");
+    assert(tokenDoc.getElementById("viewOnlyNotice").hidden === false, "Läsvy-notisen ska synas");
+  });
+
+  await test("Code.gs innehåller samma kolumner/fält som formuläret skickar in", async () => {
+    const res = await fetch("../apps-script/Code.gs");
+    assert(res.ok, "Kunde inte hämta Code.gs (kör testerna via en webbserver, inte file://)");
+    const src = await res.text();
+    ["token", "tidsstämpel", "kommer", "namn", "email", "telefon",
+     "allergier", "allergier_ovrigt", "alkohol", "buss_vigsel", "buss_natt", "meddelande",
+    ].forEach((col) => {
+      assert(src.includes(`"${col}"`), `Kolumnen "${col}" saknas i Code.gs COLUMNS`);
+    });
+    // Ska INTE innehålla det gamla partner-schemat (regressionsskydd).
+    ["tar_med_partner", "partner_namn", "allergier_partner", "alkohol_partner"].forEach((old) => {
+      assert(!src.includes(`"${old}"`), `Föråldrat partner-fält "${old}" finns kvar i Code.gs`);
+    });
+    // doGet ska finnas (läsvy via token) men bara läsa, inte skriva.
+    assert(src.includes("function doGet"), "doGet saknas — läsvyn via token bygger på den");
+  });
+
+  summaryEl.textContent = `${passCount} av ${passCount + failCount} tester godkända`;
+  summaryEl.className = failCount === 0 ? "pass" : "fail";
+}
+
+run();
+</script>
+</body>
+</html>

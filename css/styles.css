@@ -1,0 +1,336 @@
+/* ===========================================================
+   Färgpalett — "Slottsgrädde" är aktiv default.
+   Två alternativ finns kommenterade direkt nedanför: byt genom
+   att kommentera ut den aktiva blocket och kommentera in en annan.
+   =========================================================== */
+:root {
+  /* --- Alternativ 1: Slottsgrädde (aktiv) --- */
+  --color-bg: #faf6ef;
+  --color-bg-alt: #f2ead9;
+  --color-text: #2f2b23;
+  --color-text-soft: #5b5548;
+  --color-accent: #4a5d47;      /* dämpad salviagrön */
+  --color-accent-soft: #7c8c72;
+  --color-gold: #a68a4e;         /* dämpad guld/mässing */
+  --color-line: #d9cfb8;
+  --color-card-bg: #ffffff;
+
+  /* --- Alternativ 2: Old Money Navy (avkommentera för att testa) ---
+  --color-bg: #f7f4ec;
+  --color-bg-alt: #ece6d6;
+  --color-text: #1f2430;
+  --color-text-soft: #4d5566;
+  --color-accent: #1f2f4d;
+  --color-accent-soft: #4a5c82;
+  --color-gold: #b08d4f;
+  --color-line: #d8d0ba;
+  --color-card-bg: #ffffff;
+  */
+
+  /* --- Alternativ 3: Dusty Rose (avkommentera för att testa) ---
+  --color-bg: #faf3ee;
+  --color-bg-alt: #f1e0d8;
+  --color-text: #392a28;
+  --color-accent: #7a2e34;
+  --color-accent-soft: #b98a8d;
+  --color-gold: #ad8a55;
+  --color-line: #e3cfc4;
+  --color-card-bg: #ffffff;
+  */
+
+  --font-heading: "Cormorant Garamond", "Times New Roman", serif;
+  --font-body: "EB Garamond", Georgia, "Times New Roman", serif;
+
+  --container-width: 780px;
+  --radius: 2px;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+img, svg { max-width: 100%; display: block; }
+
+.container {
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+section { padding: 5rem 0; }
+
+h1, h2, h3, h4 {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--color-text);
+  text-align: center;
+  margin: 0 0 1rem;
+}
+
+h1 { font-size: clamp(2.2rem, 6vw, 3.4rem); }
+h2 {
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  margin-bottom: 2.5rem;
+  position: relative;
+}
+h2::after {
+  content: "";
+  display: block;
+  width: 64px;
+  height: 1px;
+  background: var(--color-gold);
+  margin: 0.9rem auto 0;
+}
+h3 { font-size: 1.75rem; margin-bottom: 0.4rem; }
+h4 { font-size: 1.4rem; margin-bottom: 0.4rem; }
+
+p { margin: 0 0 1rem; }
+.lede {
+  text-align: center;
+  max-width: 560px;
+  margin: 0 auto 1.5rem;
+  color: var(--color-text-soft);
+}
+
+a { color: var(--color-accent); }
+
+.hr-ornament {
+  border: none;
+  border-top: 1px solid var(--color-line);
+  width: 96px;
+  margin: 2.5rem auto;
+}
+
+/* ---------- Hero ---------- */
+.hero {
+  padding-top: 4.5rem;
+  text-align: center;
+}
+.hero__eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 0.75rem;
+  color: var(--color-gold);
+  margin-bottom: 0.75rem;
+}
+.hero__illustration {
+  width: min(480px, 90%);
+  margin: 1rem auto 2rem;
+}
+.hero__photo-frame {
+  position: relative;
+  margin: 2rem auto 0;
+  width: min(460px, 100%);
+  aspect-ratio: 4 / 3;
+}
+.hero__photo-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(to right, var(--color-bg) 0%, transparent 6%, transparent 94%, var(--color-bg) 100%),
+    linear-gradient(to bottom, var(--color-bg) 0%, transparent 6%, transparent 94%, var(--color-bg) 100%);
+}
+.hero__photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+
+/* ---------- Praktiska detaljer ---------- */
+.details-block { margin-bottom: 3.5rem; }
+.details-block:last-child { margin-bottom: 0; }
+
+.dresscode__text { text-align: center; margin-bottom: 1.25rem; }
+
+.dresscode-groups {
+  max-width: 420px;
+  margin: 0 auto;
+}
+.dresscode-group { text-align: center; padding: 1.5rem 0; }
+.dresscode-group h4 {
+  color: var(--color-accent);
+  margin: 0 0 0.9rem;
+}
+.dresscode-divider {
+  border: none;
+  border-top: 1px solid var(--color-gold);
+  width: 64px;
+  margin: 0 auto;
+}
+
+.dresscode-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  color: var(--color-text-soft);
+}
+.dresscode-list li { margin-bottom: 0.6rem; }
+.dresscode-list li:last-child { margin-bottom: 0; }
+
+/* Schema / timeline */
+.schedule {
+  max-width: 480px;
+  margin: 0 auto;
+  list-style: none;
+  padding: 0;
+}
+.schedule__item {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 1rem;
+  padding: 0.9rem 0;
+  border-bottom: 1px solid var(--color-line);
+}
+.schedule__item:last-child { border-bottom: none; }
+.schedule__time {
+  font-family: var(--font-heading);
+  color: var(--color-gold);
+  font-size: 1.1rem;
+  text-align: right;
+}
+.schedule__label strong { display: block; }
+.schedule__label a { font-size: 0.92rem; }
+.schedule__note {
+  text-align: center;
+  color: var(--color-text-soft);
+  font-size: 0.98rem;
+  max-width: 480px;
+  margin: 1.5rem auto 0;
+}
+
+/* Toastmasters */
+.toastmasters__note {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: var(--color-text-soft);
+}
+
+.btn {
+  display: inline-block;
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  letter-spacing: 0.03em;
+  text-decoration: none;
+  color: #fff;
+  background: var(--color-accent);
+  border: 1px solid var(--color-accent);
+  padding: 0.85rem 2.4rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+.btn:hover { opacity: 0.88; }
+.btn:disabled { opacity: 0.6; cursor: default; }
+
+/* ---------- OSA-formulär ---------- */
+.osa-form-wrapper {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  padding: clamp(1.5rem, 5vw, 3rem);
+  margin-top: 1rem;
+}
+
+.field { margin-bottom: 1.4rem; }
+.field > label,
+.field > .field__legend {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 1.02rem;
+  margin-bottom: 0.4rem;
+}
+.field--required > label::after,
+.field--required > .field__legend::after { content: " *"; color: var(--color-gold); }
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+textarea,
+select {
+  width: 100%;
+  font: inherit;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+textarea { min-height: 90px; resize: vertical; }
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--color-gold);
+}
+
+.radio-group, .checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.4rem;
+}
+.radio-group label, .checkbox-group label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  cursor: pointer;
+}
+.checkbox-group--allergier { margin-bottom: 0.7rem; }
+
+.subsection {
+  border-top: 1px dashed var(--color-line);
+  padding-top: 1.4rem;
+  margin-top: 1.6rem;
+}
+.subsection__title {
+  font-family: var(--font-heading);
+  color: var(--color-accent);
+  margin-bottom: 1rem;
+}
+
+.hp-field {
+  position: absolute;
+  left: -9999px;
+  top: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.form-status {
+  margin-top: 1.2rem;
+  text-align: center;
+  font-family: var(--font-heading);
+}
+.form-status[data-state="success"] { color: var(--color-accent); }
+.form-status[data-state="error"] { color: #8a3b2b; }
+.form-status[data-state="info"] { color: var(--color-text-soft); }
+.form-status[hidden] { display: none; }
+
+/* ---------- Footer ---------- */
+footer {
+  text-align: center;
+  padding: 3rem 1.5rem 3.5rem;
+  color: var(--color-text-soft);
+  font-size: 0.9rem;
+}
+
+/* ---------- Responsivt ---------- */
+@media (max-width: 640px) {
+  section { padding: 3.5rem 0; }
+  .schedule__item { grid-template-columns: 60px 1fr; }
+}
