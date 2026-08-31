@@ -283,6 +283,14 @@ async function run() {
     assert(src.includes("function doGet"), "doGet saknas — läsvyn via token bygger på den");
   });
 
+  await test("Code.gs skyddar mot formula injection innan setValue", async () => {
+    const res = await fetch("../apps-script/Code.gs");
+    assert(res.ok, "Kunde inte hämta Code.gs (kör testerna via en webbserver, inte file://)");
+    const src = await res.text();
+    assert(src.includes("function sanitizeForSheet"), "sanitizeForSheet saknas — formula injection-skydd bygger på den");
+    assert(/setValue\(\s*sanitizeForSheet\(/.test(src), "appendRow ska köra värden genom sanitizeForSheet innan setValue");
+  });
+
   summaryEl.textContent = `${passCount} av ${passCount + failCount} tester godkända`;
   summaryEl.className = failCount === 0 ? "pass" : "fail";
 }

