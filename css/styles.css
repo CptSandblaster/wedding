@@ -236,6 +236,7 @@ a { color: var(--color-accent); }
 }
 .btn:hover { opacity: 0.88; }
 .btn:disabled { opacity: 0.6; cursor: default; }
+.btn[hidden] { display: none; }
 
 /* ---------- OSA-formulär ---------- */
 .osa-form-wrapper {
