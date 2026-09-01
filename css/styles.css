@@ -276,6 +276,24 @@ input:focus, textarea:focus, select:focus {
   border-color: var(--color-gold);
 }
 
+input:disabled,
+textarea:disabled,
+select:disabled {
+  background: var(--color-bg-alt);
+  color: var(--color-text-soft);
+  border-color: var(--color-line);
+  cursor: default;
+}
+.radio-group input:disabled,
+.checkbox-group input:disabled {
+  cursor: default;
+}
+.radio-group label:has(input:disabled),
+.checkbox-group label:has(input:disabled) {
+  color: var(--color-text-soft);
+  cursor: default;
+}
+
 .radio-group, .checkbox-group {
   display: flex;
   flex-wrap: wrap;
@@ -350,7 +368,17 @@ input:focus, textarea:focus, select:focus {
 }
 .form-status[data-state="success"] { color: var(--color-accent); }
 .form-status[data-state="error"] { color: #8a3b2b; }
-.form-status[data-state="info"] { color: var(--color-text-soft); }
+.form-status[data-state="info"] {
+  color: var(--color-text);
+  background: var(--color-bg-alt);
+  border: 1px solid var(--color-gold);
+  border-radius: var(--radius);
+  padding: 0.9rem 1.2rem;
+  margin-top: 0;
+  margin-bottom: 1.4rem;
+  font-family: var(--font-body);
+  font-weight: 600;
+}
 .form-status[hidden] { display: none; }
 
 /* ---------- Footer ---------- */
