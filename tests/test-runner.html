@@ -286,6 +286,7 @@ async function run() {
     tokenWin.enterViewOnlyMode();
     assert(tokenDoc.getElementById("namn").disabled === true, "namn ska vara disabled i läsvyn");
     assert(tokenDoc.getElementById("submitBtn").hidden === true, "Skicka-knappen ska döljas i läsvyn");
+    assert(tokenDoc.getElementById("submitBtn").disabled === true, "Skicka-knappen ska vara disabled i läsvyn (inte bara dold), så OSA inte kan skickas in av misstag");
     assert(tokenDoc.getElementById("viewOnlyNotice").hidden === false, "Läsvy-notisen ska synas");
   });
 

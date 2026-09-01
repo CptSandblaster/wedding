@@ -142,6 +142,7 @@ function enterViewOnlyMode() {
     el.disabled = true;
   });
   submitBtn.hidden = true;
+  submitBtn.disabled = true;
   viewOnlyNotice.hidden = false;
 }
 

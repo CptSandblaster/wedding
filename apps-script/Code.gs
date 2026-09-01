@@ -112,13 +112,16 @@ function sendConfirmationEmail(data, token) {
   lines.push("");
   lines.push("Tack för din OSA. Här är en sammanfattning av dina svar:");
   lines.push("");
+  lines.push("Namn: " + data.namn);
+  lines.push("E-post: " + data.email);
+  lines.push("Telefon: " + data.telefon);
   lines.push("Kommer: " + data.kommer);
   if (data.kommer === "Ja") {
     lines.push("Allergier/specialkost: " + (data.allergier || "-") + (data.allergier_ovrigt ? " (" + data.allergier_ovrigt + ")" : ""));
     lines.push("Alkohol: " + (data.alkohol || "-"));
     lines.push("Buss kyrka -> slott: " + (data.buss_vigsel || "-"));
     lines.push("Buss slott -> T-centralen (01:15): " + (data.buss_natt || "-"));
-    if (data.meddelande) lines.push("Meddelande: " + data.meddelande);
+    lines.push("Meddelande: " + (data.meddelande || "-"));
   }
   lines.push("");
   lines.push("Du kan se dina svar när som helst via länken nedan (går inte att ändra där):");
