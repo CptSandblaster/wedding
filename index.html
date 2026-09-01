@@ -16,14 +16,26 @@
 </head>
 <body>
 
+<!-- ============ NAV ============ -->
+<nav class="site-nav">
+  <div class="site-nav__inner">
+    <span class="site-nav__logo">M &amp; S</span>
+    <div class="site-nav__links">
+      <a href="#praktiskt">Praktiskt</a>
+      <a href="#faq">Frågor</a>
+      <a href="#osa-formular" class="site-nav__cta">OSA</a>
+    </div>
+  </div>
+</nav>
+
 <!-- ============ HERO ============ -->
 <header class="hero container">
   <p class="hero__eyebrow">6 februari 2027 &middot; Djursholms slott</p>
     <img class="hero__illustration" src="assets/Djursholms-slott-outline.png" alt="Stiliserad linjeillustration av Djursholms slott">
   <h1>Välkommen på bröllop!</h1>
   <p class="lede">Vi ska gifta oss och vi vill fira dagen tillsammans med just dig.</p>
-
-
+  <a href="#osa-formular" class="btn">OSA här</a>
+  <p class="hero__scroll-hint">Skrolla vidare för mer information</p>
 
   <div class="hero__photo-frame">
     <img class="hero__photo" src="assets/sanremo.jpg" alt="Malin och Sebastian">
@@ -108,7 +120,7 @@
     <!-- Toastmasters -->
     <div class="details-block" id="toastmasters">
       <h3>Toastmasters</h3>
-      <p class="toastmasters__note">Vi älskar tal, sång, spex och sånt. Vill du hålla tal eller bidra med något under kvällen? Hör av dig till våra fantastiskan toastmasters Julia Rönnblom och Anton Grönberg på <a href="mailto:toast@malinochsebastian.wedding">toast@malinochsebastian.wedding</a>!</p>
+      <p class="toastmasters__note">Vi älskar tal, sång, spex och sånt. Vill du hålla tal eller bidra med något under kvällen? Hör av dig till våra fantastiska toastmasters Julia Rönnblom och Anton Grönberg på <a href="mailto:toast@malinochsebastian.wedding">toast@malinochsebastian.wedding</a>!</p>
     </div>
   </section>
 
@@ -237,7 +249,10 @@
         </div>
 
         <div class="form-submit">
-          <button type="submit" class="btn" id="submitBtn">Skicka OSA</button>
+          <button type="submit" class="btn" id="submitBtn">
+            <span class="btn-spinner" id="submitSpinner" hidden aria-hidden="true"></span>
+            <span id="submitBtnLabel">Skicka OSA</span>
+          </button>
         </div>
 
         <p class="form-status" id="formStatus" hidden></p>

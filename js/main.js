@@ -8,6 +8,8 @@ const formStatus = document.getElementById("formStatus");
 const viewOnlyNotice = document.getElementById("viewOnlyNotice");
 const osaFormWrapper = document.getElementById("osaFormWrapper");
 const formLoading = document.getElementById("formLoading");
+const submitSpinner = document.getElementById("submitSpinner");
+const submitBtnLabel = document.getElementById("submitBtnLabel");
 
 // Radiogrupper som bara ska vara obligatoriska när gästen kommer (dvs. när
 // restOfForm visas). Webbläsare validerar dolda fält i formuläret ändå
@@ -108,6 +110,8 @@ form.addEventListener("submit", async (event) => {
   }
 
   submitBtn.disabled = true;
+  submitSpinner.hidden = false;
+  submitBtnLabel.textContent = "Skickar…";
   const payload = collectFormData();
 
   try {
@@ -129,6 +133,8 @@ form.addEventListener("submit", async (event) => {
     showStatus("Något gick fel. Försök gärna igen om en liten stund.", "error");
   } finally {
     submitBtn.disabled = false;
+    submitSpinner.hidden = true;
+    submitBtnLabel.textContent = "Skicka OSA";
   }
 });
 
