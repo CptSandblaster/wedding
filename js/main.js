@@ -1,5 +1,5 @@
 // Fyll i med den publicerade Apps Script-webbapp-URL:en efter `clasp deploy` (fas 2).
-const APPS_SCRIPT_URL = "";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyCTvoCURXW_elUaGv7pH3yyb3UTMPX0SxKjKQy01dklX6wxTJd1UqQx8I4aq5REiDU/exec";
 
 const form = document.getElementById("osaForm");
 const restOfForm = document.getElementById("restOfForm");

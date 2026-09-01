@@ -10,7 +10,8 @@
  * svaret redigeras manuellt i kalkylbladet.
  *
  * Deploy: clasp push && clasp deploy -i <deploymentId>
- * (Använd alltid samma deploymentId vid omdeploy, annars ändras webbapp-URL:en.)
+ * (Använd alltid samma deploymentId vid omdeploy, annars ändras webbapp-URL:en.
+ * Aktiv deploymentId: AKfycbyCTvoCURXW_elUaGv7pH3yyb3UTMPX0SxKjKQy01dklX6wxTJd1UqQx8I4aq5REiDU)
  */
 
 var SHEET_NAME = "Svar";
