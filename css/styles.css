@@ -165,9 +165,11 @@ a { color: var(--color-accent); }
   text-align: center;
 }
 .hero__eyebrow {
+  font-family: var(--font-heading);
   text-transform: uppercase;
-  letter-spacing: 0.22em;
-  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  font-size: 1.05rem;
+  font-weight: 600;
   color: var(--color-gold);
   margin-bottom: 0.75rem;
 }
@@ -238,6 +240,26 @@ a { color: var(--color-accent); }
 }
 .dresscode-list li { margin-bottom: 0.6rem; }
 .dresscode-list li:last-child { margin-bottom: 0; }
+
+.date-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: fit-content;
+  margin: 0 auto 2rem;
+  padding: 0.6rem 1.4rem;
+  border: 1px solid var(--color-gold);
+  border-radius: 999px;
+  color: var(--color-accent);
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+}
+.date-badge__icon {
+  width: 1.3rem;
+  height: 1.3rem;
+  color: var(--color-gold);
+  flex-shrink: 0;
+}
 
 /* Schema / timeline */
 .schedule {
@@ -467,6 +489,18 @@ select:disabled {
   text-align: center;
   font-family: var(--font-heading);
 }
+.deadline-banner {
+  max-width: 560px;
+  margin: 0 auto 2rem;
+  text-align: center;
+  color: var(--color-text);
+  background: var(--color-bg-alt);
+  border: 1px solid var(--color-gold);
+  border-radius: var(--radius);
+  padding: 0.9rem 1.2rem;
+  font-family: var(--font-body);
+}
+
 .form-status[data-state="success"] { color: var(--color-accent); }
 .form-status[data-state="error"] { color: #8a3b2b; }
 .form-status[data-state="info"] {

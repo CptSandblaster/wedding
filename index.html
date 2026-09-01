@@ -34,7 +34,7 @@
     <img class="hero__illustration" src="assets/Djursholms-slott-outline.png" alt="Stiliserad linjeillustration av Djursholms slott">
   <h1>Välkommen på bröllop!</h1>
   <p class="lede">Vi ska gifta oss och vi vill fira dagen tillsammans med just dig.</p>
-  <a href="#osa-formular" class="btn">OSA här</a>
+  <a href="#osa-formular" class="btn">OSA senast 1 december</a>
   <p class="hero__scroll-hint">Skrolla vidare för mer information</p>
 
   <div class="hero__photo-frame">
@@ -73,7 +73,15 @@
     <!-- Schema -->
     <div class="details-block" id="schema">
       <h3>Tider</h3>
-      <p class="dresscode__text"><strong>Datum:</strong> 6 februari 2027</p>
+      <div class="date-badge">
+        <svg class="date-badge__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+          <line x1="3" y1="9" x2="21" y2="9"></line>
+          <line x1="8" y1="3" x2="8" y2="7"></line>
+          <line x1="16" y1="3" x2="16" y2="7"></line>
+        </svg>
+        <span>6 februari 2027</span>
+      </div>
       <ol class="schedule">
         <li class="schedule__item">
           <span class="schedule__time">15:30</span>
@@ -161,7 +169,7 @@
   <!-- ============ OSA-FORMULÄR ============ -->
   <section class="container" id="osa-formular">
     <h2>OSA</h2>
-    <p class="lede">OSA senast <u>1 december 2026</u> (ett inskick per person).</p>
+    <p class="deadline-banner">OSA senast <strong>1 december 2026</strong> (ett inskick per person).</p>
     <p class="form-status" id="viewOnlyNotice" data-state="info" hidden>Det här är en läsvy av din OSA &mdash; fälten går inte att ändra här. Vill du uppdatera något, hör av dig direkt till oss.</p>
     <div class="form-loading" id="formLoading" hidden aria-live="polite">
       <span class="spinner" aria-hidden="true"></span> Hämtar dina svar…
