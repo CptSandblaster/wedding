@@ -151,8 +151,11 @@
     <h2>OSA</h2>
     <p class="lede">OSA senast <u>1 december 2026</u> (ett inskick per person).</p>
     <p class="form-status" id="viewOnlyNotice" data-state="info" hidden>Det här är en läsvy av din OSA &mdash; fälten går inte att ändra här. Vill du uppdatera något, hör av dig direkt till oss.</p>
+    <div class="form-loading" id="formLoading" hidden aria-live="polite">
+      <span class="spinner" aria-hidden="true"></span> Hämtar dina svar…
+    </div>
 
-    <div class="osa-form-wrapper">
+    <div class="osa-form-wrapper" id="osaFormWrapper">
       <form id="osaForm" novalidate>
 
         <!-- Honeypot -->

@@ -123,7 +123,7 @@ function sendConfirmationEmail(data, token) {
   lines.push("");
   lines.push("Du kan se dina svar när som helst via länken nedan (går inte att ändra där):");
   lines.push(viewLink);
-  lines.push("Behöver du ändra något, hör bara av dig direkt till oss.");
+  lines.push("Vill du ändra något i din OSA, hör av dig direkt till brudparet så uppdaterar vi det åt dig.");
   lines.push("");
   lines.push("Varmt välkommen!");
   lines.push("Malin & Sebastian");

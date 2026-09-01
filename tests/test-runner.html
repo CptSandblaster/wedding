@@ -213,23 +213,37 @@ async function run() {
     assert(status.hidden === true, "formStatus ska förbli dold när formuläret är ogiltigt");
   });
 
-  await test("Komplett Ja-formulär passerar validering (når fram till backend-kollen)", () => {
-    fillAttendingGuest(doc, win);
+  // Dessa två tester stubbar window.fetch innan submit så vi aldrig POSTar
+  // riktiga testrader/mejl mot den skarpa Apps Script-backenden.
+  async function submitWithStubbedFetch(win, doc) {
     const status = doc.getElementById("formStatus");
     status.hidden = true;
+    const originalFetch = win.fetch;
+    let calledUrl = null;
+    win.fetch = (url) => {
+      calledUrl = url;
+      return Promise.resolve({ json: () => Promise.resolve({ ok: true }) });
+    };
     doc.getElementById("submitBtn").click();
-    assert(status.hidden === false, "formStatus ska visas (backend-URL saknas ännu, men valideringen ska ha passerat)");
-    assert(status.textContent.includes("inte färdigkopplat"), "Förväntat felmeddelande om saknad backend-URL");
+    await new Promise((r) => setTimeout(r, 50));
+    win.fetch = originalFetch;
+    return { status, calledUrl };
+  }
+
+  await test("Komplett Ja-formulär passerar validering och POSTar till backend-URL:en", async () => {
+    fillAttendingGuest(doc, win);
+    const { status, calledUrl } = await submitWithStubbedFetch(win, doc);
+    assert(!!calledUrl, "Formuläret ska POSTa till APPS_SCRIPT_URL när valideringen passerat");
+    assert(status.hidden === false, "formStatus ska visas efter (stubbad) lyckad inskickning");
+    assert(status.textContent.includes("Tack"), "Förväntat tack-meddelande vid lyckad inskickning");
   });
 
-  await test("Nej-formulär kräver bara namn/e-post/telefon", () => {
+  await test("Nej-formulär kräver bara namn/e-post/telefon", async () => {
     doc.getElementById("namn").value = "Test Nej";
     doc.getElementById("email").value = "nej@example.com";
     doc.getElementById("telefon").value = "0701234567";
     setRadio(doc, "kommer", "Nej");
-    const status = doc.getElementById("formStatus");
-    status.hidden = true;
-    doc.getElementById("submitBtn").click();
+    const { status } = await submitWithStubbedFetch(win, doc);
     assert(status.hidden === false, "Nej-formulär med ifyllda basfält ska passera validering");
   });
 
@@ -252,8 +266,17 @@ async function run() {
   await test("getViewToken() läser ?t=-parametern ur URL:en", async () => {
     const tokenWin = await loadFrame("../index.html?t=abc123");
     assert(tokenWin.getViewToken() === "abc123", "getViewToken() ska returnera query-parameterns värde");
-    // Utan backend-URL kan sidan inte hämta data, men fälten ska förbli
-    // aktiva (view-only-läget triggas bara om hämtningen faktiskt lyckas).
+    // Formuläret ska vara dolt bakom snurrladdaren direkt vid sidladdning
+    // (synkront, innan hämtningen mot backend hinner svara).
+    assert(tokenWin.document.getElementById("osaFormWrapper").hidden === true, "Formuläret ska vara dolt medan svaret hämtas");
+    assert(tokenWin.document.getElementById("formLoading").hidden === false, "Snurrladdaren ska synas medan svaret hämtas");
+    // "abc123" är inte en riktig token, så hämtningen ska misslyckas och
+    // formuläret återgå till ett vanligt, ifyllbart formulär. Väntar
+    // generöst eftersom detta är en riktig nätverksrundtripp mot Apps
+    // Script (kan vara långsam vid kallstart).
+    await new Promise((r) => setTimeout(r, 5000));
+    assert(tokenWin.document.getElementById("osaFormWrapper").hidden === false, "Formuläret ska visas igen när token inte hittas");
+    assert(tokenWin.document.getElementById("formLoading").hidden === true, "Snurrladdaren ska döljas när svaret kommit (eller misslyckats)");
     assert(tokenWin.document.getElementById("namn").disabled === false, "Fälten ska vara aktiva när ingen data kunde hämtas");
   });
 

@@ -315,6 +315,34 @@ input:focus, textarea:focus, select:focus {
   text-align: center;
 }
 
+.form-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  padding: 3rem 0;
+  font-family: var(--font-heading);
+  color: var(--color-text-soft);
+}
+.form-loading[hidden] {
+  display: none;
+}
+
+.spinner {
+  width: 1.1rem;
+  height: 1.1rem;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .form-status {
   margin-top: 1.2rem;
   text-align: center;

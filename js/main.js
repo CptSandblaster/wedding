@@ -6,6 +6,8 @@ const restOfForm = document.getElementById("restOfForm");
 const submitBtn = document.getElementById("submitBtn");
 const formStatus = document.getElementById("formStatus");
 const viewOnlyNotice = document.getElementById("viewOnlyNotice");
+const osaFormWrapper = document.getElementById("osaFormWrapper");
+const formLoading = document.getElementById("formLoading");
 
 // Radiogrupper som bara ska vara obligatoriska när gästen kommer (dvs. när
 // restOfForm visas). Webbläsare validerar dolda fält i formuläret ändå
@@ -144,12 +146,18 @@ function enterViewOnlyMode() {
 }
 
 async function loadViewOnly(token) {
-  if (!APPS_SCRIPT_URL) return;
+  if (!APPS_SCRIPT_URL) {
+    revealForm();
+    return;
+  }
 
   try {
     const res = await fetch(`${APPS_SCRIPT_URL}?t=${encodeURIComponent(token)}&_=${Date.now()}`);
     const data = await res.json();
-    if (!data || !data.found) return;
+    if (!data || !data.found) {
+      revealForm();
+      return;
+    }
 
     // Enkla textfält
     ["namn", "email", "telefon", "allergier_ovrigt", "meddelande"].forEach((name) => {
@@ -186,9 +194,16 @@ async function loadViewOnly(token) {
 
     updateKommerVisibility();
     enterViewOnlyMode();
+    revealForm();
   } catch (err) {
     // Ogiltig/borttagen token: visa bara ett tomt formulär, inget felmeddelande.
+    revealForm();
   }
+}
+
+function revealForm() {
+  formLoading.hidden = true;
+  osaFormWrapper.hidden = false;
 }
 
 updateKommerVisibility();
@@ -196,5 +211,7 @@ updateKommerVisibility();
 const viewToken = getViewToken();
 if (viewToken) {
   document.getElementById("osa-formular").scrollIntoView();
+  osaFormWrapper.hidden = true;
+  formLoading.hidden = false;
   loadViewOnly(viewToken);
 }
