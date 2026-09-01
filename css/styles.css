@@ -311,6 +311,10 @@ input:focus, textarea:focus, select:focus {
   overflow: hidden;
 }
 
+.form-submit {
+  text-align: center;
+}
+
 .form-status {
   margin-top: 1.2rem;
   text-align: center;
