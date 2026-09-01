@@ -18,7 +18,7 @@ var SHEET_NAME = "Svar";
 // Fyll i med sajtens faktiska URL (t.ex. "https://malinochsebastian.wedding/").
 // Tom sträng gör att bekräftelsemailet länkar direkt till Apps Script-URL:en
 // istället, vilket fungerar men inte visar den riktiga sajten.
-var SITE_URL = "";
+var SITE_URL = "https://malinochsebastian.wedding/";
 
 var COLUMNS = [
   "token",
