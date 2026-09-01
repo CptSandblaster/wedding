@@ -92,12 +92,70 @@ function collectFormData() {
   };
 }
 
+// ---- Validering: röda kanter + svenska felmeddelanden istället för
+// webbläsarens inbyggda (språkberoende) valideringsbubblor ----
+function fieldMessage(el) {
+  if (el.validity.customError) return el.validationMessage; // redan svenska, satt via setCustomValidity
+  if (el.validity.valueMissing) {
+    return el.type === "radio" || el.type === "checkbox" ? "Välj ett alternativ." : "Det här fältet är obligatoriskt.";
+  }
+  if (el.validity.typeMismatch && el.type === "email") return "Ange en giltig e-postadress.";
+  return "Fältet är inte korrekt ifyllt.";
+}
+
+function setFieldError(wrapper, message) {
+  wrapper.classList.add("field--invalid");
+  let msgEl = wrapper.querySelector(".field__error");
+  if (!msgEl) {
+    msgEl = document.createElement("p");
+    msgEl.className = "field__error";
+    wrapper.appendChild(msgEl);
+  }
+  msgEl.textContent = message;
+}
+
+function clearFieldError(wrapper) {
+  wrapper.classList.remove("field--invalid");
+  const msgEl = wrapper.querySelector(".field__error");
+  if (msgEl) msgEl.remove();
+}
+
+function showValidationErrors() {
+  const invalidEls = [...form.elements].filter((el) => el.willValidate && !el.checkValidity());
+  const handledWrappers = new Set();
+  invalidEls.forEach((el) => {
+    const wrapper = el.closest(".field");
+    if (!wrapper || handledWrappers.has(wrapper)) return;
+    handledWrappers.add(wrapper);
+    setFieldError(wrapper, fieldMessage(el));
+  });
+  if (invalidEls[0]) invalidEls[0].focus();
+}
+
+function revalidateField(event) {
+  const el = event.target;
+  if (!el.willValidate) return;
+  const wrapper = el.closest(".field");
+  if (!wrapper) return;
+  const stillInvalid = [...wrapper.querySelectorAll("input, textarea, select")].some(
+    (input) => input.willValidate && !input.checkValidity()
+  );
+  if (stillInvalid) {
+    setFieldError(wrapper, fieldMessage(el));
+  } else {
+    clearFieldError(wrapper);
+  }
+}
+
+form.addEventListener("input", revalidateField);
+form.addEventListener("change", revalidateField);
+
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
   formStatus.hidden = true;
 
   if (!form.checkValidity()) {
-    form.reportValidity();
+    showValidationErrors();
     return;
   }
 
@@ -124,6 +182,7 @@ form.addEventListener("submit", async (event) => {
     if (data && data.ok) {
       showStatus("Tack, vi har tagit emot din OSA!", "success");
       form.reset();
+      form.querySelectorAll(".field--invalid").forEach(clearFieldError);
       updateKommerVisibility();
       updateAllergierValidity();
     } else {

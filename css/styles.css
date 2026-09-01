@@ -69,6 +69,7 @@ img, svg { max-width: 100%; display: block; }
 }
 
 section { padding: 5rem 0; }
+section[id] { scroll-margin-top: 5rem; }
 
 h1, h2, h3, h4 {
   font-family: var(--font-heading);
@@ -309,6 +310,26 @@ a { color: var(--color-accent); }
 }
 .field--required > label::after,
 .field--required > .field__legend::after { content: " *"; color: var(--color-gold); }
+
+.field--invalid > label,
+.field--invalid > .field__legend {
+  color: #8a3b2b;
+}
+.field--invalid input[type="text"],
+.field--invalid input[type="email"],
+.field--invalid input[type="tel"],
+.field--invalid textarea {
+  border-color: #8a3b2b;
+}
+.field--invalid .radio-group label,
+.field--invalid .checkbox-group label {
+  border-color: #8a3b2b;
+}
+.field__error {
+  color: #8a3b2b;
+  font-size: 0.88rem;
+  margin: 0.4rem 0 0;
+}
 
 input[type="text"],
 input[type="email"],

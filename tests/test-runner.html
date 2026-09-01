@@ -213,6 +213,44 @@ async function run() {
     assert(status.hidden === true, "formStatus ska förbli dold när formuläret är ogiltigt");
   });
 
+  await test("Ogiltiga obligatoriska fält får röd kant och svenskt felmeddelande (ingen webbläsarbubbla)", () => {
+    ["namn", "email", "telefon"].forEach((id) => (doc.getElementById(id).value = ""));
+    doc.querySelectorAll('input[name="kommer"]').forEach((el) => (el.checked = false));
+    doc.getElementById("submitBtn").click();
+
+    const namnField = doc.getElementById("namn").closest(".field");
+    assert(namnField.classList.contains("field--invalid"), "namn-fältets wrapper ska få klassen field--invalid");
+    const namnError = namnField.querySelector(".field__error");
+    assert(!!namnError, "Ett .field__error-meddelande ska läggas till för namn");
+    assert(namnError.textContent === "Det här fältet är obligatoriskt.", `Förväntade ett svenskt felmeddelande, fick "${namnError.textContent}"`);
+    assert(
+      win.getComputedStyle(doc.getElementById("namn")).borderColor === "rgb(138, 59, 43)",
+      "namn-fältet ska ha röd kant när det är ogiltigt"
+    );
+
+    const kommerField = doc.querySelector('input[name="kommer"]').closest(".field");
+    assert(kommerField.classList.contains("field--invalid"), "kommer-fältets wrapper ska få klassen field--invalid");
+    assert(
+      kommerField.querySelector(".field__error").textContent === "Välj ett alternativ.",
+      "kommer ska få ett radiogrupp-specifikt svenskt felmeddelande"
+    );
+
+    // Rätta namn-fältet och kontrollera att felet försvinner igen.
+    const namn = doc.getElementById("namn");
+    namn.value = "Test Testsson";
+    namn.dispatchEvent(new win.Event("input", { bubbles: true }));
+    assert(!namnField.classList.contains("field--invalid"), "field--invalid ska tas bort när fältet rättas");
+    assert(!namnField.querySelector(".field__error"), ".field__error ska tas bort när fältet rättas");
+  });
+
+  await test("Skrollmål hamnar inte bakom den sticky navbaren (scroll-margin-top)", () => {
+    const navHeight = doc.querySelector(".site-nav").getBoundingClientRect().height;
+    const target = doc.getElementById("faq");
+    target.scrollIntoView({ behavior: "instant", block: "start" });
+    const top = target.getBoundingClientRect().top;
+    assert(top >= navHeight - 1, `#faq hamnar bakom navbaren (top=${top}px, navbarhöjd=${navHeight}px)`);
+  });
+
   // Dessa två tester stubbar window.fetch innan submit så vi aldrig POSTar
   // riktiga testrader/mejl mot den skarpa Apps Script-backenden.
   async function submitWithStubbedFetch(win, doc) {
