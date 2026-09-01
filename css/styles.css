@@ -241,24 +241,68 @@ a { color: var(--color-accent); }
 .dresscode-list li { margin-bottom: 0.6rem; }
 .dresscode-list li:last-child { margin-bottom: 0; }
 
+.date-badge-wrap {
+  position: relative;
+  width: fit-content;
+  margin: 0 auto 2rem;
+}
 .date-badge {
   display: flex;
   align-items: center;
   gap: 0.6rem;
   width: fit-content;
-  margin: 0 auto 2rem;
+  margin: 0;
   padding: 0.6rem 1.4rem;
   border: 1px solid var(--color-gold);
   border-radius: 999px;
+  background: none;
   color: var(--color-accent);
+  font: inherit;
   font-family: var(--font-heading);
   font-size: 1.1rem;
+  cursor: pointer;
+}
+.date-badge:hover {
+  background: var(--color-bg-alt);
 }
 .date-badge__icon {
   width: 1.3rem;
   height: 1.3rem;
   color: var(--color-gold);
   flex-shrink: 0;
+}
+
+.calendar-menu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  padding: 0.4rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+.calendar-menu[hidden] {
+  display: none;
+}
+.calendar-menu a {
+  display: block;
+  padding: 0.55rem 1.1rem;
+  white-space: nowrap;
+  text-decoration: none;
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  border-radius: 4px;
+}
+.calendar-menu a:hover {
+  background: var(--color-bg-alt);
+  color: var(--color-accent);
 }
 
 /* Schema / timeline */

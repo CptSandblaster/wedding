@@ -251,6 +251,40 @@ async function run() {
     assert(top >= navHeight - 1, `#faq hamnar bakom navbaren (top=${top}px, navbarhöjd=${navHeight}px)`);
   });
 
+  await test("Kalenderknappen visar/döljer en meny med Google- och .ics-länkar", () => {
+    const toggle = doc.getElementById("calendarToggle");
+    const menu = doc.getElementById("calendarMenu");
+    assert(menu.hidden === true, "Kalendermenyn ska vara dold från start");
+
+    toggle.click();
+    assert(menu.hidden === false, "Kalendermenyn ska synas efter klick på badgen");
+
+    const links = [...menu.querySelectorAll("a")];
+    assert(links.length === 2, `Förväntade 2 länkar i kalendermenyn, hittade ${links.length}`);
+
+    const googleLink = links.find((a) => a.textContent.includes("Google"));
+    assert(!!googleLink, "En länk till Google Kalender ska finnas");
+    assert(googleLink.href.startsWith("https://calendar.google.com/calendar/render"), "Google-länken ska peka på calendar.google.com/render");
+    assert(googleLink.href.includes("dates=20270206T143000Z%2F20270207T010000Z") || googleLink.getAttribute("href").includes("dates=20270206T143000Z/20270207T010000Z"), "Google-länken ska innehålla rätt start-/sluttid i UTC");
+
+    const icsLink = links.find((a) => a.textContent.includes("ics"));
+    assert(!!icsLink, "En länk till .ics-filen ska finnas");
+    assert(icsLink.getAttribute("href") === "assets/brollop.ics", "ics-länken ska peka på assets/brollop.ics");
+
+    // Klick utanför ska stänga menyn igen.
+    doc.body.click();
+    assert(menu.hidden === true, "Kalendermenyn ska stängas vid klick utanför");
+  });
+
+  await test("assets/brollop.ics innehåller ett giltigt VEVENT för rätt datum", async () => {
+    const res = await fetch("../assets/brollop.ics");
+    assert(res.ok, "Kunde inte hämta assets/brollop.ics");
+    const text = await res.text();
+    ["BEGIN:VCALENDAR", "BEGIN:VEVENT", "DTSTART:20270206T143000Z", "DTEND:20270207T010000Z", "END:VEVENT", "END:VCALENDAR"].forEach((line) => {
+      assert(text.includes(line), `.ics-filen saknar raden "${line}"`);
+    });
+  });
+
   // Dessa två tester stubbar window.fetch innan submit så vi aldrig POSTar
   // riktiga testrader/mejl mot den skarpa Apps Script-backenden.
   async function submitWithStubbedFetch(win, doc) {

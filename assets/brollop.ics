@@ -1,0 +1,16 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Malin och Sebastian//Brollop//SV
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:malin-sebastian-brollop-20270206@malinochsebastian.wedding
+DTSTAMP:20260901T000000Z
+DTSTART:20270206T143000Z
+DTEND:20270207T010000Z
+SUMMARY:Malin \& Sebastians bröllop
+DESCRIPTION:Vigsel i Danderyds kyrka kl 15:30\, fest på Djursholms slott. Mer info: https://malinochsebastian.wedding/
+LOCATION:Danderyds kyrka \& Djursholms slott
+URL:https://malinochsebastian.wedding/
+END:VEVENT
+END:VCALENDAR

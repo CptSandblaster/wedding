@@ -272,6 +272,34 @@ function revealForm() {
   osaFormWrapper.hidden = false;
 }
 
+// ---- "Lägg till i kalender"-meny på datum-badgen ----
+const calendarToggle = document.getElementById("calendarToggle");
+const calendarMenu = document.getElementById("calendarMenu");
+
+function closeCalendarMenu() {
+  calendarMenu.hidden = true;
+  calendarToggle.setAttribute("aria-expanded", "false");
+}
+
+if (calendarToggle && calendarMenu) {
+  calendarToggle.addEventListener("click", (event) => {
+    event.stopPropagation();
+    const isOpen = !calendarMenu.hidden;
+    calendarMenu.hidden = isOpen;
+    calendarToggle.setAttribute("aria-expanded", String(!isOpen));
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!calendarMenu.hidden && !calendarMenu.contains(event.target) && event.target !== calendarToggle) {
+      closeCalendarMenu();
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeCalendarMenu();
+  });
+}
+
 updateKommerVisibility();
 
 const viewToken = getViewToken();

@@ -73,14 +73,20 @@
     <!-- Schema -->
     <div class="details-block" id="schema">
       <h3>Tider</h3>
-      <div class="date-badge">
-        <svg class="date-badge__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-          <rect x="3" y="5" width="18" height="16" rx="2"></rect>
-          <line x1="3" y1="9" x2="21" y2="9"></line>
-          <line x1="8" y1="3" x2="8" y2="7"></line>
-          <line x1="16" y1="3" x2="16" y2="7"></line>
-        </svg>
-        <span>6 februari 2027</span>
+      <div class="date-badge-wrap">
+        <button type="button" class="date-badge" id="calendarToggle" aria-haspopup="true" aria-expanded="false">
+          <svg class="date-badge__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+            <line x1="3" y1="9" x2="21" y2="9"></line>
+            <line x1="8" y1="3" x2="8" y2="7"></line>
+            <line x1="16" y1="3" x2="16" y2="7"></line>
+          </svg>
+          <span>6 februari 2027</span>
+        </button>
+        <div class="calendar-menu" id="calendarMenu" hidden>
+          <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=Malin%20%26%20Sebastians%20br%C3%B6llop&amp;dates=20270206T143000Z/20270207T010000Z&amp;details=Vigsel%20i%20Danderyds%20kyrka%20kl%2015%3A30%2C%20fest%20p%C3%A5%20Djursholms%20slott.%20Mer%20info%3A%20https%3A//malinochsebastian.wedding/&amp;location=Danderyds%20kyrka%20%26%20Djursholms%20slott" target="_blank" rel="noopener">Google Kalender</a>
+          <a href="assets/brollop.ics">Apple/Outlook (.ics)</a>
+        </div>
       </div>
       <ol class="schedule">
         <li class="schedule__item">
