@@ -131,7 +131,9 @@ function sendConfirmationEmail(data, token) {
   lines.push("Varmt välkommen!");
   lines.push("Malin & Sebastian");
 
-  MailApp.sendEmail(data.email, "Din OSA till Malin & Sebastians bröllop", lines.join("\n"));
+  GmailApp.sendEmail(data.email, "Din OSA till Malin & Sebastians bröllop", lines.join("\n"), {
+    from: "osa@malinochsebastian.wedding"
+  });
 }
 
 function doPost(e) {
