@@ -343,8 +343,8 @@ a { color: var(--color-accent); }
   margin: 1.5rem auto 0;
 }
 
-/* Toastmasters */
-.toastmasters__note {
+/* Toastmasters, Parkering m.fl. */
+.details-block__note {
   text-align: center;
   margin-top: 1.5rem;
   color: var(--color-text-soft);
